@@ -23,7 +23,9 @@ public class LocatarioController {
     @GetMapping
     public ResponseEntity<List<LocatarioResponse>> listarLocatarios(){
         return  ResponseEntity.ok(locatarioService.obtenerLocatarios());
-    };
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<LocatarioResponse> obtenerLocatario(@PathVariable Long id){
         return ResponseEntity.ok(locatarioService.obtenerLocatario(id));

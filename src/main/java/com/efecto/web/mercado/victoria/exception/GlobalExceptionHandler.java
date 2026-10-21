@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
                 request.getDescription(false).replace("uri=", "")
         );
 
-        log.error("Log error" + ex.getMessage(), ex);
+        log.error("Log error{}", ex.getMessage(), ex);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
