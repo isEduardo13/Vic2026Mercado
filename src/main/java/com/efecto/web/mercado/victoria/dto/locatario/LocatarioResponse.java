@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record LocatarioResponse(
-        Integer id,
+        Long id,
         String nombre,
         String telefono) {
 

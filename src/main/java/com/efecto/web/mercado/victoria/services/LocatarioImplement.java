@@ -39,17 +39,28 @@ public class LocatarioImplement implements LocatarioService {
 
     @Override
     public LocatarioResponse registrarLocatario(LocatarioRequest locatarioRequest) {
-        return null;
+        log.info("Iniciando registrarLocatario {}", locatarioRequest);
+        Locatario locatario = locatarioMapper.requestToEntity(locatarioRequest);
+        locatarioRepository.save(locatario);
+        return locatarioMapper.entityToResponse(locatario);
     }
 
     @Override
     public LocatarioResponse actualizarLocatario(Long id, LocatarioRequest locatarioRequest) {
-        return null;
+        log.info("Iniciando actualizarLocatario {}", id);
+        Locatario locatario =obtenerLocatarioOLanzarExcepcion(id);
+        locatario.actualizar(locatarioRequest.nombre(),locatarioRequest.telefono());
+        locatarioRepository.save(locatario);
+
+        return locatarioMapper.entityToResponse(locatario);
     }
 
     @Override
     public void eliminarLocatario(Long id) {
+        log.info("Iniciando eliminarLocatario {}", id);
+        obtenerLocatarioOLanzarExcepcion(id);
 
+        locatarioRepository.deleteById(id);
     }
 
     private Locatario obtenerLocatarioOLanzarExcepcion(Long id) {
