@@ -33,7 +33,7 @@ public void actualizar(String nombre, String telefono) {
     this.telefono = telefono;
 }
 
-public void validarDatos(String nombre, String telefono) {
+private void validarDatos(String nombre, String telefono) {
     if (nombre == null || nombre.trim().isEmpty()) {
         throw new IllegalArgumentException("El nombre del locatario no puede estar vacío.");
     }
