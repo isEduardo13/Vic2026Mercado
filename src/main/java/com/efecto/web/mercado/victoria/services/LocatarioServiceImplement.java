@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class LocatarioImplement implements LocatarioService {
+public class LocatarioServiceImplement implements LocatarioService {
 
     private final LocatarioRepository locatarioRepository;
     private final LocatarioMapper locatarioMapper;

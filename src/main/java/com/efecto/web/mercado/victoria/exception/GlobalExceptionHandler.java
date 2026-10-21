@@ -1,48 +1,59 @@
 package com.efecto.web.mercado.victoria.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
-import java.time.Instant;
+import java.net.URI;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                Instant.now().toString(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                "Hubo un problema interno en el servidor",
-                request.getDescription(false).replace("uri=", "")
+    public ProblemDetail handleAllExceptions(
+            Exception ex,
+            HttpServletRequest request) {
+
+        log.error("Error interno en {}",
+                request.getRequestURI(), ex);
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Hubo un problema interno en el servidor"
         );
 
-        log.error("Log error{}", ex.getMessage(), ex);
+        problem.setTitle("Internal Server Error");
+        problem.setInstance(
+                URI.create(request.getRequestURI())
+        );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return problem;
     }
-
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> handleRecursoNoEncontrado(RecursoNoEncontradoException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                Instant.now().toString(),
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", "")
+    public ProblemDetail handleRecursoNoEncontrado(
+            RecursoNoEncontradoException ex,
+            HttpServletRequest request) {
+
+        log.warn("Recurso no encontrado: {}",
+                ex.getMessage());
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
         );
 
-        log.warn("Recurso no encontrado: {}", ex.getMessage());
+        problem.setTitle("Not Found");
+        problem.setInstance(
+                URI.create(request.getRequestURI())
+        );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return problem;
     }
-
 }
 
