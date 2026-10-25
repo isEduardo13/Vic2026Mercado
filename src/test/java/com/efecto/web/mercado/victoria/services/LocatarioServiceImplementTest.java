@@ -1,6 +1,7 @@
 package com.efecto.web.mercado.victoria.services;
 
 
+import com.efecto.web.mercado.victoria.dto.locatario.LocatarioRequest;
 import com.efecto.web.mercado.victoria.dto.locatario.LocatarioResponse;
 import com.efecto.web.mercado.victoria.entities.Locatario;
 import com.efecto.web.mercado.victoria.exception.RecursoNoEncontradoException;
@@ -87,6 +88,74 @@ public class LocatarioServiceImplementTest {
         verify(locatarioRepository, times(1)).findById(1L);
 
 
+    }
+
+    @Test
+    void registrarLocatario_debeGuardarYRetornarLocatario_cuandoDatosSonValidos() {
+        LocatarioRequest request = new LocatarioRequest("Juanito Jose", "2444567854");
+        when(locatarioMapper.requestToEntity(request)).thenReturn(locatario);
+        when(locatarioMapper.entityToResponse(locatario)).thenReturn(locatarioResponse);
+
+        LocatarioResponse resultado = locatarioService.registrarLocatario(request);
+
+        assertEquals(locatarioResponse, resultado);
+        verify(locatarioMapper).requestToEntity(request);
+        verify(locatarioRepository).save(locatario);
+        verify(locatarioMapper).entityToResponse(locatario);
+    }
+    @Test
+    void actualizarLocatario_debeActualizarYRetornarLocatario_cuandoExiste() {
+        LocatarioRequest request = new LocatarioRequest("Nuevo nombre", "1234567890");
+        LocatarioResponse respuestaActualizada = LocatarioResponse.builder()
+                .id(1L)
+                .nombre("Nuevo nombre")
+                .telefono("1234567890")
+                .build();
+        when(locatarioRepository.findById(1L)).thenReturn(Optional.of(locatario));
+        when(locatarioMapper.entityToResponse(locatario)).thenReturn(respuestaActualizada);
+
+        LocatarioResponse resultado = locatarioService.actualizarLocatario(1L, request);
+
+        assertEquals(respuestaActualizada, resultado);
+        assertEquals("Nuevo nombre", locatario.getNombre());
+        assertEquals("1234567890", locatario.getTelefono());
+        verify(locatarioRepository).save(locatario);
+        verify(locatarioMapper).entityToResponse(locatario);
+    }
+    @Test
+    void actualizarLocatario_debeLanzarExcepcion_cuandoNoExiste() {
+        LocatarioRequest request = new LocatarioRequest("Nuevo nombre", "1234567890");
+        when(locatarioRepository.findById(1L)).thenReturn(Optional.empty());
+
+        RecursoNoEncontradoException exception = assertThrows(
+                RecursoNoEncontradoException.class,
+                () -> locatarioService.actualizarLocatario(1L, request)
+        );
+
+        assertEquals("Locatario no encontrado", exception.getMessage());
+        verify(locatarioRepository, never()).save(any());
+    }
+
+    @Test
+    void eliminarLocatario_debeEliminar_cuandoExiste() {
+        when(locatarioRepository.findById(1L)).thenReturn(Optional.of(locatario));
+
+        locatarioService.eliminarLocatario(1L);
+
+        verify(locatarioRepository).deleteById(1L);
+    }
+
+    @Test
+    void eliminarLocatario_debeLanzarExcepcion_cuandoNoExiste() {
+        when(locatarioRepository.findById(1L)).thenReturn(Optional.empty());
+
+        RecursoNoEncontradoException exception = assertThrows(
+                RecursoNoEncontradoException.class,
+                () -> locatarioService.eliminarLocatario(1L)
+        );
+
+        assertEquals("Locatario no encontrado", exception.getMessage());
+        verify(locatarioRepository, never()).deleteById(any());
     }
 
 
