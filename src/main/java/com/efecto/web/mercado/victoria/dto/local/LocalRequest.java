@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record LocalRequest(
         @NotNull(message = "El id del local padre no puede ser nulo")
-        Long LocalPadreId,
+        Long localPadreId,
         @NotBlank(message = "El nombre del local no puede estar en blanco")
         String nombre,
         @NotBlank(message = "El número del local no puede estar en blanco")
