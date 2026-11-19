@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -55,5 +56,25 @@ public class GlobalExceptionHandler {
 
         return problem;
     }
-}
+    @ExceptionHandler (BadCredentialsException.class)
+    public ProblemDetail handleBadCredentials(
+            BadCredentialsException ex,
+            HttpServletRequest request) {
 
+        log.warn("Credenciales inválidas: {}",
+                ex.getMessage());
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage()
+        );
+
+        problem.setTitle("Unauthorized");
+        problem.setInstance(
+                URI.create(request.getRequestURI())
+        );
+
+        return problem;
+    }
+
+}
