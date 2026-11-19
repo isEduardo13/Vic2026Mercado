@@ -15,7 +15,7 @@ public class LocatarioMapper {
         if (locatarioRequest == null) return null;
 
         return Locatario.builder()
-                .nombre(locatarioRequest.nombre().trim())
+                .nombre(locatarioRequest.nombre() != null ? locatarioRequest.nombre().trim() : null)
                 .telefono(locatarioRequest.telefono() != null && !locatarioRequest.telefono().isBlank()
                         ? locatarioRequest.telefono().trim() : null)
                 .build();
